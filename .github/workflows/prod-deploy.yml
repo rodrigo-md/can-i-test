@@ -1,0 +1,53 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Docker build & deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against
+          fetch-depth: 0
+      - name: Set ssh-agent # Apparently it creates the ~/.ssh folder
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_UI_PRIVATE_KEY }}
+      - name: Register remote servers to known_hosts
+        run: |
+          echo ${{secrets.SSH_UI_KNOWN_HOST}} >> ~/.ssh/known_hosts
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v2
+      - run: |
+          echo "BASE: ${{ env.NX_BASE }}"
+          echo "HEAD: ${{ env.NX_HEAD }}"
+      - name: Set Node JS version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: 'Install Dependencies'
+        run: npm ci
+      - name: 'Nx build'
+        run: npx nx affected --target=deploy --docker-tag=${GITHUB_SHA} --max-attempts=${{secrets.DOCKER_RUN_MAX_ATTEMPTS}} --project-name={project.name}
+        env:
+          INPUT_PUSH: true
+          SSH_UI_USER: ${{ secrets.SSH_UI_USER }}
+          SSH_UI_HOST: ${{ secrets.SSH_UI_HOST }}
+          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # issue: https://github.com/nx-tools/nx-tools/issues/327

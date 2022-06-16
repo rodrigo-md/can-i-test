@@ -86,6 +86,36 @@
         "jestConfig": "apps/ui/jest.config.ts",
         "passWithNoTests": true
       }
+    },
+    "deploy": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          "npx nx run ui:docker",
+          "tools/post-docker-push.sh {args.docker-tag} {args.max-attempts} {args.project-name}"
+        ],
+        "parallel": false
+      }
+    },
+    "docker": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": [
+          "rodrigomartinezd/can-i-test-ui:latest"
+        ],
+        "metadata": {
+          "enabled": true,
+          "images": [
+            "rodrigomartinezd/can-i-test-ui"
+          ],
+          "tags": [
+            "latest",
+            "type=sha,prefix=,format=long"
+          ]
+        },
+        "file": "apps/ui/Dockerfile"
+      }
     }
   },
   "tags": []
