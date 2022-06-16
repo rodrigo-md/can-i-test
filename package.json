@@ -30,6 +30,7 @@
     "@nrwl/react": "14.2.4",
     "@nrwl/web": "14.2.4",
     "@nrwl/workspace": "14.2.4",
+    "@nx-tools/nx-docker": "^3.0.0",
     "@testing-library/react": "13.3.0",
     "@types/express": "4.17.13",
     "@types/jest": "27.4.1",
