@@ -60,7 +60,31 @@
     "deploy": {
       "executor": "@nrwl/workspace:run-commands",
       "options": {
-        "command": "echo deploying api..."
+        "commands": [
+          "npx nx run api:docker",
+          "helm upgrade --install --namespace can-i-test api-canihelp apps/api/infraestructure/k8s/ --set domain={args.api-domain},email={args.api-email},dockerImageTag={args.docker-tag} --values apps/api/infraestructure/k8s/values.yaml 2>&1"
+        ],
+        "parallel": false
+      }
+    },
+    "docker": {
+      "executor": "@nx-tools/nx-docker:build",
+      "options": {
+        "push": false,
+        "tags": [
+          "rodrigomartinezd/can-i-test-api:latest"
+        ],
+        "metadata": {
+          "enabled": true,
+          "images": [
+            "rodrigomartinezd/can-i-test-api"
+          ],
+          "tags": [
+            "latest",
+            "type=sha,prefix=,format=long"
+          ]
+        },
+        "file": "apps/api/Dockerfile"
       }
     }
   },

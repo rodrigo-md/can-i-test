@@ -1,0 +1,14 @@
+# Default values for api-canihelp.
+
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# The email used to register an account into cert-manager.io
+# Any notification about your certificates will be sent to this email
+email: "email@example.com"
+
+# The domain for which we will request a SSL certificate
+domain: "example.com"
+
+# The docker image tag of our api to be deployed
+dockerImageTag: "latest"
