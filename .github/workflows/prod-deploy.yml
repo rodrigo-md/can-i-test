@@ -44,8 +44,18 @@ jobs:
           node-version: 14
       - name: 'Install Dependencies'
         run: npm ci
+      - name: Setup K8s context
+        uses: azure/k8s-set-context@v2
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+          context: ${{ secrets.KUBECONTEXT }}
+      - name: 'Setup Helm'
+        uses: azure/setup-helm@v3
+        with:
+          version: 3.9.1
       - name: 'Nx build'
-        run: npx nx affected --target=deploy --docker-tag=${GITHUB_SHA} --max-attempts=${{secrets.DOCKER_RUN_MAX_ATTEMPTS}} --project-name={project.name}
+        run: npx nx affected --target=deploy --docker-tag=${GITHUB_SHA} --api-domain=${{ secrets.API_DOMAIN }} --api-email=${{ secrets.API_EMAIL }}  --project-name={project.name}
         env:
           INPUT_PUSH: true
           SSH_UI_USER: ${{ secrets.SSH_UI_USER }}
