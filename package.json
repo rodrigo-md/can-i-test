@@ -5,7 +5,8 @@
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
-    "test": "nx test"
+    "test": "nx test",
+    "commit": "npx cz"
   },
   "private": true,
   "dependencies": {
@@ -43,7 +44,9 @@
     "@typescript-eslint/parser": "~5.24.0",
     "babel-jest": "27.5.1",
     "babel-plugin-styled-components": "1.10.7",
+    "commitizen": "^4.2.4",
     "cypress": "^9.1.0",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "~8.15.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "8.1.0",
@@ -59,5 +62,10 @@
     "ts-jest": "27.1.4",
     "ts-node": "~10.8.0",
     "typescript": "~4.7.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
