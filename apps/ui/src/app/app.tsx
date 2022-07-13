@@ -17,7 +17,7 @@ export function App() {
 
   return (
     <StyledApp>
-      <NxWelcome title="Can I test?" />
+      <NxWelcome title="Can I help? with SSL enabled!" />
       {/* <div>{response.message}</div> */}
     </StyledApp>
   );
