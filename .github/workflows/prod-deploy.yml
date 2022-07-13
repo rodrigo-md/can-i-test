@@ -51,3 +51,5 @@ jobs:
           SSH_UI_USER: ${{ secrets.SSH_UI_USER }}
           SSH_UI_HOST: ${{ secrets.SSH_UI_HOST }}
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # issue: https://github.com/nx-tools/nx-tools/issues/327
+          UI_DOMAIN: ${{ secrets.UI_DOMAIN }}
+          UI_SSL_EMAIL: ${{ secrets.UI_SSL_EMAIL }}

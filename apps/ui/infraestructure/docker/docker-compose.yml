@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  nginx:
+    image: rodrigomartinezd/can-i-test-ui:${DOCKER_TAG}
+    pull_policy: always
+    restart: unless-stopped
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt:rw
+      - ./data/certbot/www:/var/www/certbot:rw
+    env_file:
+      - .env
+  certbot:
+    image: certbot/certbot:v1.29.0
+    restart: unless-stopped
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt:rw
+      - ./data/certbot/www:/var/www/certbot:rw

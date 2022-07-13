@@ -92,7 +92,7 @@
       "options": {
         "commands": [
           "npx nx run ui:docker",
-          "tools/post-docker-push.sh {args.docker-tag} {args.max-attempts} {args.project-name}"
+          "apps/ui/infraestructure/scripts/post-docker-push.sh {args.project-name} {args.docker-tag}"
         ],
         "parallel": false
       }
@@ -114,7 +114,7 @@
             "type=sha,prefix=,format=long"
           ]
         },
-        "file": "apps/ui/Dockerfile"
+        "file": "apps/ui/infraestructure/docker/Dockerfile"
       }
     }
   },
