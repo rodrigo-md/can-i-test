@@ -1,5 +1,8 @@
 FROM node:14-alpine as build
 WORKDIR /app
+
+ARG NX_API_URL
+
 COPY package.json .
 RUN npm install
 COPY . .

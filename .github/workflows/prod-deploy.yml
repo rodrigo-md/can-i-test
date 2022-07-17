@@ -49,13 +49,12 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBECONFIG }}
-          context: ${{ secrets.KUBECONTEXT }}
       - name: 'Setup Helm'
         uses: azure/setup-helm@v3
         with:
           version: 3.9.1
       - name: 'Nx build'
-        run: npx nx affected --target=deploy --docker-tag=${GITHUB_SHA} --api-domain=${{ secrets.API_DOMAIN }} --api-email=${{ secrets.API_EMAIL }}  --project-name={project.name}
+        run: npx nx affected --target=deploy --docker-tag=${GITHUB_SHA} --api-domain=${{ secrets.API_DOMAIN }} --api-email=${{ secrets.API_EMAIL }} --ui-url=https://${{ secrets.UI_DOMAIN }} --project-name={project.name}
         env:
           INPUT_PUSH: true
           SSH_UI_USER: ${{ secrets.SSH_UI_USER }}
@@ -63,3 +62,4 @@ jobs:
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # issue: https://github.com/nx-tools/nx-tools/issues/327
           UI_DOMAIN: ${{ secrets.UI_DOMAIN }}
           UI_SSL_EMAIL: ${{ secrets.UI_SSL_EMAIL }}
+          INPUT_BUILD_ARGS: "NX_API_URL=https://${{ secrets.API_DOMAIN }}" # issue: https://github.com/nx-tools/nx-tools/issues/350

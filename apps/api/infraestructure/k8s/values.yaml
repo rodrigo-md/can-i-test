@@ -9,6 +9,13 @@ email: "email@example.com"
 
 # The domain for which we will request a SSL certificate
 domain: "example.com"
+uiUrl: "http://ui.example.com"
 
 # The docker image tag of our api to be deployed
 dockerImageTag: "latest"
+
+
+# List of environment variables that will be injected to the app container
+# once is deployed
+env:
+  API_BASE_URL: ""
