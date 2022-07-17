@@ -1,24 +1,23 @@
 import styled from 'styled-components';
 import NxWelcome from './nx-welcome';
-// import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 const StyledApp = styled.div`
   // Your style here
 `;
 
 export function App() {
-  // const [response, setResponse] = useState({message: 'loading...'});
+  const [response, setResponse] = useState({message: 'loading...'});
 
-  // useEffect(() => {
-  //   fetch('/api')
-  //     .then(response => response.json())
-  //     .then(setResponse);
-  // }, []);
+  useEffect(() => {
+    fetch(`${process.env['NX_API_URL']}/`)
+      .then(response => response.json())
+      .then(setResponse);
+  }, []);
 
   return (
     <StyledApp>
-      <NxWelcome title="Can I help? with SSL enabled!" />
-      {/* <div>{response.message}</div> */}
+      <NxWelcome title={response.message || 'couldn\'t get the title from the API'} />
     </StyledApp>
   );
 }

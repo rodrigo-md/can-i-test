@@ -34,4 +34,6 @@ spec:
           image: rodrigomartinezd/can-i-test-api:{{ .Values.dockerImageTag }}
           ports:
             - containerPort: 3000
+          env:
+          {{- include "helpers.list-env-variables" . | indent 10 }}
           imagePullPolicy: Always

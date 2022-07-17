@@ -7,8 +7,8 @@ import * as express from 'express';
 
 const app = express();
 
-app.get('/api', function (req, res) {
-  res.send({ message: 'Welcome to api!' });
+app.get(`${process.env.API_BASE_URL}/`, function (req, res) {
+  res.send({ message: 'Testing UI/API integration' });
 });
 
 const port = process.env.port || 3000;
