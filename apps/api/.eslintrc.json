@@ -3,7 +3,7 @@
   "plugins": ["import"],
   "ignorePatterns": ["!**/*", "src/environments/*.ts", "jest.config.ts"],
   "parserOptions": {
-    "project": "apps/api/tsconfig.app.json"
+    "project": "apps/api/tsconfig.eslint.json"
   },
   "overrides": [
     {
@@ -12,7 +12,17 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-use-before-define": [
+          "error",
+          {
+            "functions": false,
+            "classes": true,
+            "variables": true,
+            "allowNamedExports": true
+          }
+        ]
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
