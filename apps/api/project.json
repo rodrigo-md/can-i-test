@@ -62,7 +62,7 @@
       "options": {
         "commands": [
           "npx nx run api:docker",
-          "helm upgrade --install --namespace can-i-test api-canihelp apps/api/infraestructure/k8s/ --set domain={args.api-domain},email={args.api-email},uiUrl={args.ui-url},dockerImageTag={args.docker-tag} --values apps/api/infraestructure/k8s/values.yaml 2>&1"
+          "helm upgrade --install --namespace can-i-test api-canihelp apps/api/infraestructure/k8s/ --set domain={args.api-domain},email={args.api-email},uiUrl={args.ui-url},dockerImageTag={args.docker-tag},jwtSecret=$JWT_SECRET,githubClientId=$GITHUB_CLIENT_ID,githubClientSecret=$GITHUB_CLIENT_SECRET --values apps/api/infraestructure/k8s/values.yaml 2>&1"
         ],
         "parallel": false
       }
