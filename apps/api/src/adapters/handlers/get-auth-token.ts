@@ -15,14 +15,16 @@ function isString(value: unknown): value is string {
 export const createGetAuthTokenHandler = (
   githubClient: GithubClient,
   jwt: JWT,
-  config: Pick<AuthTokenDTO, 'jwtSecret'>
+  config: Pick<AuthTokenDTO, 'jwtSecret'>,
 ) => {
   return async (ctxt: HttpContext) => {
     const cookieConfig = { sameSite: 'none', secure: true };
     const { code = '' } = ctxt.queryParams();
 
     if (!isString(code) || code.length === 0) {
-      throw new httpErrors.BadRequest('"code" query parameter must be a non empty string.');
+      throw new httpErrors.BadRequest(
+        '"code" query parameter must be a non empty string.',
+      );
     }
 
     try {
@@ -30,7 +32,7 @@ export const createGetAuthTokenHandler = (
       const { payload, signature } = await getAuthTokenUseCase(
         githubClient,
         jwt,
-        authTokenDTO
+        authTokenDTO,
       );
 
       ctxt.status(200);

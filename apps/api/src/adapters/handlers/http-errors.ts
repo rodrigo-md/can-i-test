@@ -25,8 +25,7 @@ export class BadRequest extends HttpError {
   }
 }
 
-
 export default {
   BadGateway,
-  BadRequest
+  BadRequest,
 };

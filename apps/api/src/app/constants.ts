@@ -3,8 +3,7 @@ const oauth = {
   clientSecret: process.env.GITHUB_OAUTH_CLIENT_SECRET,
 };
 
-
 export const auth = {
   oauth,
-  jwtSecret: process.env.JWT_SECRET
-}
+  jwtSecret: process.env.JWT_SECRET,
+};

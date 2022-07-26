@@ -1,3 +1,4 @@
+// eslint-disable @typescript-eslint/no-explicit-any
 import { describe, test } from '@jest/globals';
 import { HttpContext } from '../interfaces/http';
 import { createGetAuthTokenHandler } from '../get-auth-token';
@@ -26,10 +27,10 @@ describe('GetAuthToken handler', () => {
       1,
       'auth',
       expect.objectContaining({ ...payload, exp: expect.any(Number) }),
-      { sameSite: 'none', secure: true }
+      { sameSite: 'none', secure: true },
     );
     expect(ctxt.send).toHaveBeenCalledWith(
-      expect.objectContaining({ ...payload, exp: expect.any(Number) })
+      expect.objectContaining({ ...payload, exp: expect.any(Number) }),
     );
   });
 
@@ -49,7 +50,7 @@ describe('GetAuthToken handler', () => {
       2,
       'token',
       { githubToken: 'gho_189asdjhADAs8', signedToken: 'signedToken' },
-      { sameSite: 'none', secure: true, httpOnly: true }
+      { sameSite: 'none', secure: true, httpOnly: true },
     );
   });
 
@@ -62,7 +63,9 @@ describe('GetAuthToken handler', () => {
     });
 
     ctxt.queryParams.mockReturnValueOnce({});
-    expect( () => handler(ctxt as unknown as HttpContext)).rejects.toThrow(httpErrors.BadRequest);
+    expect(() => handler(ctxt as unknown as HttpContext)).rejects.toThrow(
+      httpErrors.BadRequest,
+    );
   });
 
   test.each`
@@ -83,9 +86,9 @@ describe('GetAuthToken handler', () => {
       });
 
       await expect(handler(ctxt as unknown as HttpContext)).rejects.toThrow(
-        httpErrors.BadGateway
+        httpErrors.BadGateway,
       );
-    }
+    },
   );
 
   test.each`
@@ -109,29 +112,30 @@ describe('GetAuthToken handler', () => {
       });
 
       await expect(handler(ctxt as unknown as HttpContext)).rejects.toThrow(
-        httpErrors.BadGateway
+        httpErrors.BadGateway,
       );
-    }
+    },
   );
 
   test('bubble up unknown errors', async () => {
-      const ctxt = createHttpContext();
-      const githubClient = createGithubClient({ raw: true });
-      const jwt = { sign: jest.fn().mockResolvedValueOnce('signedToken') };
-      const error = new Error('unhandled promise rejection');
-      githubClient.getAccessToken.mockResolvedValueOnce({
-        accessToken: 'gho_a219a0s9',
-      });
-      ctxt.queryParams.mockReturnValueOnce({ code: 'a129as912zdx' });
+    const ctxt = createHttpContext();
+    const githubClient = createGithubClient({ raw: true });
+    const jwt = { sign: jest.fn().mockResolvedValueOnce('signedToken') };
+    const error = new Error('unhandled promise rejection');
+    githubClient.getAccessToken.mockResolvedValueOnce({
+      accessToken: 'gho_a219a0s9',
+    });
+    ctxt.queryParams.mockReturnValueOnce({ code: 'a129as912zdx' });
 
-      githubClient.getUser.mockRejectedValueOnce(error);
-      const handler = createGetAuthTokenHandler(githubClient, jwt, {
-        jwtSecret: 'secret',
-      });
+    githubClient.getUser.mockRejectedValueOnce(error);
+    const handler = createGetAuthTokenHandler(githubClient, jwt, {
+      jwtSecret: 'secret',
+    });
 
-      await expect(handler(ctxt as unknown as HttpContext)).rejects.toThrow(error);
-    }
-  );
+    await expect(handler(ctxt as unknown as HttpContext)).rejects.toThrow(
+      error,
+    );
+  });
 });
 
 function createHttpContext() {
@@ -144,7 +148,7 @@ function createHttpContext() {
 }
 
 function createGithubClient(
-  options: { accessToken?: string; user?: any; raw?: boolean } = {}
+  options: { accessToken?: string; user?: any; raw?: boolean } = {},
 ) {
   const defaultToken = 'gho_189asdjhADAs8';
   const defaultUser = {
@@ -157,9 +161,9 @@ function createGithubClient(
   return options.raw
     ? defaultClient
     : {
-        getAccessToken: jest.fn().mockResolvedValueOnce({
-          accessToken: options.accessToken ?? defaultToken,
-        }),
-        getUser: jest.fn().mockResolvedValueOnce(options.user ?? defaultUser),
-      };
+      getAccessToken: jest.fn().mockResolvedValueOnce({
+        accessToken: options.accessToken ?? defaultToken,
+      }),
+      getUser: jest.fn().mockResolvedValueOnce(options.user ?? defaultUser),
+    };
 }

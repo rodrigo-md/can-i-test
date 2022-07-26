@@ -5,7 +5,7 @@ import {
   IncorrectClientCredentials,
   RequiresAuthentication,
   Forbidden,
-  AccessTokenNotFound
+  AccessTokenNotFound,
 } from './errors';
 
 interface GithubConfig {
@@ -33,7 +33,7 @@ function createGetAccessToken(httpClient: HttpClient, config: GithubConfig) {
           code: authorizationCode,
           scope: 'read:user,user:email',
         },
-        { headers: { accept: 'application/json' } }
+        { headers: { accept: 'application/json' } },
       );
 
       return {
@@ -68,7 +68,7 @@ function createGetUser(httpClient: HttpClient) {
             authorization: `bearer ${accessToken}`,
             accept: 'application/vnd.github+json',
           },
-        }
+        },
       );
 
       return {
