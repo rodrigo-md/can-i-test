@@ -30,7 +30,7 @@ type: application
 
 # to the chart and its templates, including the app version.
 
-version: 0.1.2
+version: 0.2.0
 
 
 
@@ -38,4 +38,4 @@ version: 0.1.2
 
 # incremented each time you make changes to the application.
 
-appVersion: 0.1.0
+appVersion: 0.2.0
