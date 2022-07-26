@@ -63,3 +63,6 @@ jobs:
           UI_DOMAIN: ${{ secrets.UI_DOMAIN }}
           UI_SSL_EMAIL: ${{ secrets.UI_SSL_EMAIL }}
           INPUT_BUILD_ARGS: "NX_API_URL=https://${{ secrets.API_DOMAIN }}" # issue: https://github.com/nx-tools/nx-tools/issues/350
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}

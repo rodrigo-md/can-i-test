@@ -36,4 +36,19 @@ spec:
             - containerPort: 3000
           env:
           {{- include "helpers.list-env-variables" . | indent 10 }}
+            - name: GITHUB_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  key: clientId
+                  name: {{ .Release.Name }}-github-oauth
+            - name: GITHUB_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: clientSecret
+                  name: {{ .Release.Name }}-github-oauth
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: jwtSecret
+                  name: {{ .Release.Name }}-jwt
           imagePullPolicy: Always

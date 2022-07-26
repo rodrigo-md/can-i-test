@@ -19,3 +19,4 @@ dockerImageTag: "latest"
 # once is deployed
 env:
   API_BASE_URL: ""
+  NODE_ENV: "production"
