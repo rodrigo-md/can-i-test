@@ -54,7 +54,13 @@ jobs:
         with:
           version: 3.9.1
       - name: 'Nx build'
-        run: npx nx affected --target=deploy --docker-tag=${GITHUB_SHA} --api-domain=${{ secrets.API_DOMAIN }} --api-email=${{ secrets.API_EMAIL }} --ui-url=https://${{ secrets.UI_DOMAIN }} --project-name={project.name}
+        run: |
+          npx nx affected --target=deploy \
+          --docker-tag=${GITHUB_SHA} \
+          --api-domain=${{ secrets.API_DOMAIN }} \
+          --api-email=${{ secrets.API_EMAIL }} \
+          --ui-url=https://${{ secrets.UI_DOMAIN }} \
+          --project-name={project.name}
         env:
           INPUT_PUSH: true
           SSH_UI_USER: ${{ secrets.SSH_UI_USER }}
@@ -64,5 +70,5 @@ jobs:
           UI_SSL_EMAIL: ${{ secrets.UI_SSL_EMAIL }}
           INPUT_BUILD_ARGS: "NX_API_URL=https://${{ secrets.API_DOMAIN }}" # issue: https://github.com/nx-tools/nx-tools/issues/350
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
-          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+          OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}
