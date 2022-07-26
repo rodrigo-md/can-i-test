@@ -33,7 +33,6 @@ export class AccessTokenNotFound extends Error {
   }
 }
 
-
 export const isGithubError = (err: Error): boolean => {
   switch (true) {
     case err instanceof Forbidden:
@@ -46,7 +45,7 @@ export const isGithubError = (err: Error): boolean => {
   }
 
   return false;
-}
+};
 
 export default {
   IncorrectClientCredentials,

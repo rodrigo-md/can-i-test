@@ -6,17 +6,17 @@ describe('OauthRequester handler', () => {
     const clientId = '189239Q8DU9AS8DU9128EASD';
     const authorizationUrl = 'https://github.com/login/oauth/authorize';
     const handler = createOauthRequesterHandler({
-      clientId
+      clientId,
     });
     const ctxt = {
-      redirect: jest.fn()
+      redirect: jest.fn(),
     };
 
     await handler(ctxt);
 
     expect(ctxt.redirect).toHaveBeenCalledWith(
       302,
-      `${authorizationUrl}?client_id=${clientId}&scope=read:user,user:email`
+      `${authorizationUrl}?client_id=${clientId}&scope=read:user,user:email`,
     );
   });
 });

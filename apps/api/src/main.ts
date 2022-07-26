@@ -15,19 +15,19 @@ if (process.env.NODE_ENV !== 'production') {
   router.use(cors({ origin: 'http://localhost:4200', credentials: true }));
 }
 
-
 app.get(`${process.env.API_BASE_URL}/`, function (req, res) {
   res.send({ message: 'Testing UI/API integration' });
 });
 
 routes(router);
 
+// eslint-disable-next-line
 router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if(err instanceof HttpError) {
+  if (err instanceof HttpError) {
     const { statusCode, message } = err;
 
     res.status(statusCode).send({ message });
-  }else {
+  } else {
     res.status(500).send({ message: 'Internal Server Error' });
   }
 });
