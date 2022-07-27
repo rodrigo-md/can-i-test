@@ -3,11 +3,14 @@ import * as cors from 'cors';
 import routes from './app/router';
 import { HttpError } from './adapters/handlers/http-errors';
 import Router from 'express-promise-router';
+import * as cookieParser from 'cookie-parser';
 import type { Request, Response, NextFunction } from 'express';
+import httpAdapter from './adapters/express-http';
 
 const app = express();
 const router = Router();
 
+app.use(cookieParser());
 app.use(router);
 
 if (process.env.NODE_ENV !== 'production') {
@@ -18,6 +21,13 @@ if (process.env.NODE_ENV !== 'production') {
 app.get(`${process.env.API_BASE_URL}/`, function (req, res) {
   res.send({ message: 'Testing UI/API integration' });
 });
+
+app.get(
+  '/users',
+  httpAdapter(async function (ctxt) {
+    console.log(ctxt.cookies());
+  }),
+);
 
 routes(router);
 

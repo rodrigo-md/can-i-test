@@ -25,7 +25,25 @@ export class BadRequest extends HttpError {
   }
 }
 
+export class Unauthorized extends HttpError {
+  constructor(message?: string) {
+    super(401, message ?? 'Unauthorized');
+
+    Object.setPrototypeOf(this, Unauthorized.prototype);
+  }
+}
+
+export class Forbidden extends HttpError {
+  constructor(message?: string) {
+    super(403, message ?? 'Forbidden');
+
+    Object.setPrototypeOf(this, Forbidden.prototype);
+  }
+}
+
 export default {
   BadGateway,
   BadRequest,
+  Unauthorized,
+  Forbidden,
 };

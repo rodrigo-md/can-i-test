@@ -7,6 +7,7 @@ export default (handler: (args: HttpContext) => Promise<void> | never) =>
       queryParams: () => req.query,
       status: res.status.bind(res),
       cookie: res.cookie.bind(res),
+      cookies: () => Object.freeze(req.cookies),
       send: res.send.bind(res),
       redirect: res.redirect.bind(res),
     };
