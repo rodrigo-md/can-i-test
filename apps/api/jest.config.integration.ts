@@ -13,9 +13,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/api',
-  testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
-    '!**/*.integration.test.ts'
-  ]
+  testMatch: ['**/__tests__/**/*.integration.test.[jt]s?(x)']
 };
