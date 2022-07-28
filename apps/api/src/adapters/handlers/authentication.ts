@@ -1,17 +1,17 @@
-import { authenticateUserUseCase } from '../../use-cases/authenticate-user';
+import { authenticateUserUseCase } from '../../domain/use-cases/authenticate-user';
 import {
   JwtTokenExpired,
   CorruptedCookies,
-} from '../../use-cases/authenticate-user/errors';
+} from '../../domain/use-cases/authenticate-user/errors';
 import httpErrors from './http-errors';
 import { HttpContext } from './interfaces/http';
 import type {
   JWT,
   AuthCookie,
   TokenCookie,
-} from '../../use-cases/authenticate-user';
+} from '../../domain/use-cases/authenticate-user';
 import type { ValidatorFactory } from '../services/validator';
-import type { AuthConfig } from '../../use-cases/authenticate-user';
+import type { AuthConfig } from '../../domain/use-cases/authenticate-user';
 
 const authCookieSchema = {
   type: 'object',

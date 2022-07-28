@@ -1,12 +1,12 @@
 import { HttpContext } from './interfaces/http';
 import { isGithubError } from '../clients/github/errors';
 import httpErrors from './http-errors';
-import { getAuthTokenUseCase } from '../../use-cases/get-auth-token';
+import { getAuthTokenUseCase } from '../../domain/use-cases/get-auth-token';
 import type {
   GithubClient,
   JWT,
   AuthTokenDTO,
-} from '../../use-cases/get-auth-token';
+} from '../../domain/use-cases/get-auth-token';
 
 function isString(value: unknown): value is string {
   return typeof value === 'string';
