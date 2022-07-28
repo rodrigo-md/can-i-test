@@ -2,7 +2,7 @@ import { describe, test } from '@jest/globals';
 import httpErrors from '../http-errors';
 import { createAuthenticationHandler } from '../authentication';
 import { HttpContext } from '../interfaces/http';
-import { JWT } from '../../../use-cases/authenticate-user';
+import { JWT } from '../../../domain/use-cases/authenticate-user';
 
 describe('Authentication middleware', () => {
   const authConfig = {
