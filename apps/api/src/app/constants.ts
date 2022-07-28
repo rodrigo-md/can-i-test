@@ -6,4 +6,8 @@ const oauth = {
 export const auth = {
   oauth,
   jwtSecret: process.env.JWT_SECRET,
+  aproximateJwtExpirationInSeconds: parseInt(
+    process.env.APROXIMATE_JWT_EXPIRATION_IN_SECONDS,
+    10,
+  ),
 };

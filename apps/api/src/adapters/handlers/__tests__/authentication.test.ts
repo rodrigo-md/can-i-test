@@ -5,13 +5,18 @@ import { HttpContext } from '../interfaces/http';
 import { JWT } from '../../../use-cases/authenticate-user';
 
 describe('Authentication middleware', () => {
+  const authConfig = {
+    jwtSecret: 'jwt-secret',
+    aproximateJwtExpirationInSeconds: 5,
+  };
+
   test('throw an HTTP Unauthorized error when public cookie is invalid', async () => {
     const validatePublicCookie = jest
       .fn()
-      .mockReturnValue({ valid: false, errors: {} });
+      .mockReturnValue({ valid: null, errors: [] });
     const validatePrivateCookie = jest
       .fn()
-      .mockReturnValue({ valid: false, errors: {} });
+      .mockReturnValue({ valid: null, errors: [] });
     const validationFactory = jest
       .fn()
       .mockReturnValueOnce(validatePublicCookie)
@@ -20,6 +25,7 @@ describe('Authentication middleware', () => {
     const handler = createAuthenticationHandler(
       validationFactory,
       jwt as unknown as JWT,
+      authConfig,
     );
     const ctxt = {
       cookies: jest.fn().mockReturnValue({ auth: {} }),
@@ -34,10 +40,10 @@ describe('Authentication middleware', () => {
     const authCookie = createFakeAuthCookie();
     const validatePublicCookie = jest
       .fn()
-      .mockReturnValue({ valid: true, errors: null });
+      .mockReturnValue({ valid: authCookie, errors: null });
     const validatePrivateCookie = jest
       .fn()
-      .mockReturnValue({ valid: false, errors: {} });
+      .mockReturnValue({ valid: null, errors: [] });
     const validationFactory = jest
       .fn()
       .mockReturnValueOnce(validatePublicCookie)
@@ -46,6 +52,7 @@ describe('Authentication middleware', () => {
     const handler = createAuthenticationHandler(
       validationFactory,
       jwt as unknown as JWT,
+      authConfig,
     );
     const ctxt = {
       cookies: jest.fn().mockReturnValue({ auth: authCookie }),
@@ -61,10 +68,10 @@ describe('Authentication middleware', () => {
     const tokenCookie = createFakeTokenCookie();
     const validatePublicCookie = jest
       .fn()
-      .mockReturnValue({ valid: true, errors: null });
+      .mockReturnValue({ valid: authCookie, errors: null });
     const validatePrivateCookie = jest
       .fn()
-      .mockReturnValue({ valid: true, errors: null });
+      .mockReturnValue({ valid: tokenCookie, errors: null });
     const validationFactory = jest
       .fn()
       .mockReturnValueOnce(validatePublicCookie)
@@ -76,6 +83,7 @@ describe('Authentication middleware', () => {
     const handler = createAuthenticationHandler(
       validationFactory,
       jwt as unknown as JWT,
+      authConfig,
     );
     const ctxt = {
       cookies: jest
@@ -104,10 +112,10 @@ describe('Authentication middleware', () => {
     const { signedToken } = tokenCookie;
     const validatePublicCookie = jest
       .fn()
-      .mockReturnValue({ valid: true, errors: null });
+      .mockReturnValue({ valid: authCookie, errors: null });
     const validatePrivateCookie = jest
       .fn()
-      .mockReturnValue({ valid: true, errors: null });
+      .mockReturnValue({ valid: tokenCookie, errors: null });
     const validationFactory = jest
       .fn()
       .mockReturnValueOnce(validatePublicCookie)
@@ -119,14 +127,23 @@ describe('Authentication middleware', () => {
     const handler = createAuthenticationHandler(
       validationFactory,
       jwt as unknown as JWT,
+      authConfig,
     );
     const ctxt = {
       cookies: jest
         .fn()
         .mockReturnValue({ auth: authCookie, token: tokenCookie }),
+      store: jest.fn(),
+      next: jest.fn(),
     };
 
     await handler(ctxt as unknown as HttpContext);
+
+    expect(ctxt.store).toHaveBeenCalledWith(
+      'githubToken',
+      tokenCookie.githubToken,
+    );
+    expect(ctxt.next).toHaveBeenCalled();
   });
 });
 
@@ -135,7 +152,7 @@ function createFakeAuthCookie() {
     username: 'octocat',
     homepage: 'https://github.com/octocat',
     avatarUrl: 'https://avatar.github.com/octocat',
-    exp: 1287178,
+    exp: Math.floor(Date.now() / 1000) + 60 * 60,
   };
 }
 

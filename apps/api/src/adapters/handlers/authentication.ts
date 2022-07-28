@@ -1,4 +1,8 @@
 import { authenticateUserUseCase } from '../../use-cases/authenticate-user';
+import {
+  JwtTokenExpired,
+  CorruptedCookies,
+} from '../../use-cases/authenticate-user/errors';
 import httpErrors from './http-errors';
 import { HttpContext } from './interfaces/http';
 import type {
@@ -6,38 +10,77 @@ import type {
   AuthCookie,
   TokenCookie,
 } from '../../use-cases/authenticate-user';
+import type { ValidatorFactory } from '../services/validator';
+import type { AuthConfig } from '../../use-cases/authenticate-user';
+
+const authCookieSchema = {
+  type: 'object',
+  properties: {
+    username: {
+      type: 'string',
+    },
+    homepage: {
+      type: 'string',
+    },
+    avatarUrl: {
+      type: 'string',
+    },
+    exp: {
+      type: 'integer',
+    },
+  },
+  required: ['username', 'homepage', 'avatarUrl', 'exp'],
+  additionalProperties: false,
+};
+
+const tokenCookieSchema = {
+  type: 'object',
+  properties: {
+    githubToken: {
+      type: 'string',
+    },
+    signedToken: {
+      type: 'string',
+    },
+  },
+  required: ['githubToken', 'signedToken'],
+  additionalProperties: false,
+};
 
 export const createAuthenticationHandler = (
-  validationFactory: any,
+  validatorFactory: ValidatorFactory,
   jwt: JWT,
+  config: AuthConfig,
 ) => {
-  const validatePublicCookie = validationFactory();
-  const validatePrivateCookie = validationFactory();
+  const validatePublicCookie = validatorFactory<AuthCookie>(authCookieSchema);
+  const validatePrivateCookie =
+    validatorFactory<TokenCookie>(tokenCookieSchema);
 
   return async (ctxt: HttpContext) => {
     try {
       const cookies = ctxt.cookies<{ auth?: unknown; token?: unknown }>();
 
-      const { valid: isPublicCookieValid } = validatePublicCookie(cookies.auth);
-      const { valid: isPrivateCookieValid } = validatePrivateCookie(
-        cookies.token,
-      );
+      const { valid: publicCookie } = validatePublicCookie(cookies.auth);
+      const { valid: privateCookie } = validatePrivateCookie(cookies.token);
 
-      if (!isPublicCookieValid || !isPrivateCookieValid) {
+      if (!publicCookie || !privateCookie) {
         throw new httpErrors.Unauthorized();
       }
 
-      // TODO: store githubtoken for posteriori handlers
-      await authenticateUserUseCase(
-        jwt,
-        cookies.auth as unknown as AuthCookie,
-        cookies.token as unknown as TokenCookie,
-      );
+      await authenticateUserUseCase(jwt, publicCookie, privateCookie, config);
+
+      ctxt.store('githubToken', privateCookie.githubToken);
+      ctxt.next();
     } catch (e) {
-      if (!(e instanceof httpErrors.Unauthorized)) {
-        throw new httpErrors.Forbidden();
+      switch (true) {
+        case e instanceof JwtTokenExpired:
+        case e instanceof CorruptedCookies: {
+          throw new httpErrors.Forbidden();
+        }
+        default: {
+          throw e;
+        }
       }
-      throw e;
     }
   };
 };

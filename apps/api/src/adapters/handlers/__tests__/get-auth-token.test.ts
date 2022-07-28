@@ -1,4 +1,4 @@
-// eslint-disable @typescript-eslint/no-explicit-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, test } from '@jest/globals';
 import { HttpContext } from '../interfaces/http';
 import { createGetAuthTokenHandler } from '../get-auth-token';
