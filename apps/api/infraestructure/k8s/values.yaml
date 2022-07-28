@@ -20,3 +20,4 @@ dockerImageTag: "latest"
 env:
   API_BASE_URL: ""
   NODE_ENV: "production"
+  APROXIMATE_JWT_EXPIRATION_IN_SECONDS: 5

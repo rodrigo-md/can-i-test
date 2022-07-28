@@ -1,3 +1,5 @@
+import { JwtTokenExpired, CorruptedCookies } from './errors';
+
 export interface JWT {
   sign(
     data: object,
@@ -18,19 +20,30 @@ export interface TokenCookie {
   signedToken: string;
 }
 
-// TODO: pass secret
+export interface AuthConfig {
+  jwtSecret: string;
+  aproximateJwtExpirationInSeconds: number;
+}
+
 export const authenticateUserUseCase = async (
   jwt: JWT,
   auth: AuthCookie,
   token: TokenCookie,
+  config: AuthConfig,
 ) => {
   const { githubToken, signedToken } = token;
   const payload = { ...auth, githubToken };
 
-  const calculatedJwt = await jwt.sign(payload, 'secret');
+  if (
+    auth.exp <=
+    Math.floor(Date.now() / 1000) + config.aproximateJwtExpirationInSeconds
+  ) {
+    throw new JwtTokenExpired();
+  }
 
-  // TODO: refactor to add specific Error
+  const calculatedJwt = await jwt.sign(payload, config.jwtSecret);
+
   if (signedToken !== calculatedJwt) {
-    throw new Error();
+    throw new CorruptedCookies();
   }
 };
