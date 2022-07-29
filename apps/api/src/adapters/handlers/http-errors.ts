@@ -41,9 +41,27 @@ export class Forbidden extends HttpError {
   }
 }
 
+export class NotFound extends HttpError {
+  constructor(message?: string) {
+    super(404, message ?? 'Not Found');
+
+    Object.setPrototypeOf(this, NotFound.prototype);
+  }
+}
+
+export class InternalServerError extends HttpError {
+  constructor(message?: string) {
+    super(500, message ?? 'Internal Server Error');
+
+    Object.setPrototypeOf(this, InternalServerError.prototype);
+  }
+}
+
 export default {
   BadGateway,
   BadRequest,
   Unauthorized,
   Forbidden,
+  NotFound,
+  InternalServerError,
 };
