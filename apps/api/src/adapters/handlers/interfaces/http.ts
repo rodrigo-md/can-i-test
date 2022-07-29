@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface HttpContext {
   queryParams(): { [key: string]: unknown };
+  pathParams<T extends { [key: string]: unknown }>(): T;
   status(code: number): void;
   cookie(name: string, value: unknown, config?: unknown): void;
   cookies<T extends object>(): T;

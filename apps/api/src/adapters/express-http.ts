@@ -4,7 +4,8 @@ import type { HttpContext } from './handlers/interfaces/http';
 export default (handler: (args: HttpContext) => Promise<void> | never) =>
   (req: Request, res: Response, next: NextFunction) => {
     const httpContext: HttpContext = {
-      queryParams: () => req.query,
+      queryParams: () => Object.freeze(req.query),
+      pathParams: () => Object.freeze(req.params),
       status: res.status.bind(res),
       cookie: res.cookie.bind(res),
       cookies: () => Object.freeze(req.cookies ?? {}),
