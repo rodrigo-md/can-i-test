@@ -33,12 +33,22 @@ export class AccessTokenNotFound extends Error {
   }
 }
 
+export class ValidationFailed extends Error {
+  constructor(message?: string) {
+    super(
+      message || 'There are fields or the combination of them that are invalid',
+    );
+    Object.setPrototypeOf(this, ValidationFailed.prototype);
+  }
+}
+
 export const isGithubError = (err: Error): boolean => {
   switch (true) {
     case err instanceof Forbidden:
+    case err instanceof ValidationFailed:
+    case err instanceof AccessTokenNotFound:
     case err instanceof BadVerificationCode:
     case err instanceof RequiresAuthentication:
-    case err instanceof AccessTokenNotFound:
     case err instanceof IncorrectClientCredentials: {
       return true;
     }
@@ -52,4 +62,5 @@ export default {
   BadVerificationCode,
   RequiresAuthentication,
   Forbidden,
+  ValidationFailed,
 };
