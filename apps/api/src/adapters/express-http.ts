@@ -5,7 +5,7 @@ export default (handler: (args: HttpContext) => Promise<void> | never) =>
   (req: Request, res: Response, next: NextFunction) => {
     const httpContext: HttpContext = {
       queryParams: () => Object.freeze(req.query),
-      pathParams: () => Object.freeze(req.params),
+      pathParams: <T>() => Object.freeze(req.params) as unknown as T,
       status: res.status.bind(res),
       cookie: res.cookie.bind(res),
       cookies: () => Object.freeze(req.cookies ?? {}),
