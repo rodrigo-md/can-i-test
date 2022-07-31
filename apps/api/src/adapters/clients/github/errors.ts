@@ -42,8 +42,24 @@ export class ValidationFailed extends Error {
   }
 }
 
+export class NotFound extends Error {
+  constructor(message?: string) {
+    super(message ?? 'Not Found');
+    Object.setPrototypeOf(this, NotFound.prototype);
+  }
+}
+
+export class Unknown extends Error {
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, Unknown.prototype);
+  }
+}
+
 export const isGithubError = (err: Error): boolean => {
   switch (true) {
+    case err instanceof Unknown:
+    case err instanceof NotFound:
     case err instanceof Forbidden:
     case err instanceof ValidationFailed:
     case err instanceof AccessTokenNotFound:
@@ -63,4 +79,6 @@ export default {
   RequiresAuthentication,
   Forbidden,
   ValidationFailed,
+  NotFound,
+  Unknown,
 };

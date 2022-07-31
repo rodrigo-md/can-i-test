@@ -1,12 +1,17 @@
-import { Forbidden, RequiresAuthentication, ValidationFailed } from './errors';
+import {
+  Forbidden,
+  RequiresAuthentication,
+  Unknown,
+  ValidationFailed,
+} from './errors';
 import type { HttpClient } from './interfaces/dependencies';
 import type { GithubRepository } from './interfaces/repository';
 
-export function createListUserRepositories(httpClient: HttpClient) {
+export function createListUserCollaborations(httpClient: HttpClient) {
   return async (accessToken: unknown) => {
     try {
       const response = await httpClient.get<GithubRepository[]>(
-        'https://api.github.com/user/repos?affiliation=owner,collaborator&visibility=public&per_page=50',
+        'https://api.github.com/user/repos?affiliation=collaborator&visibility=public&per_page=50',
         {
           headers: {
             authorization: `token ${accessToken}`,
@@ -15,7 +20,14 @@ export function createListUserRepositories(httpClient: HttpClient) {
         },
       );
 
-      return response.data.map((repo) => ({ name: repo.name }));
+      return response.data.map((repo) => {
+        return {
+          name: repo.name,
+          owner: repo.owner.login,
+          isPublic: !repo.private,
+          isFork: repo.fork,
+        };
+      });
     } catch (e) {
       if (e.response && e.response.status) {
         switch (e.response.status) {
@@ -27,6 +39,9 @@ export function createListUserRepositories(httpClient: HttpClient) {
           }
           case 422: {
             throw new ValidationFailed();
+          }
+          default: {
+            throw new Unknown(e.response.data);
           }
         }
       }
