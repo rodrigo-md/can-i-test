@@ -26,11 +26,11 @@ describe('GetAuthToken handler', () => {
     expect(ctxt.cookie).toHaveBeenNthCalledWith(
       1,
       'auth',
-      expect.objectContaining({ ...payload, exp: expect.any(Number) }),
+      expect.objectContaining({ ...payload }),
       { sameSite: 'none', secure: true },
     );
     expect(ctxt.send).toHaveBeenCalledWith(
-      expect.objectContaining({ ...payload, exp: expect.any(Number) }),
+      expect.objectContaining({ ...payload }),
     );
   });
 
@@ -45,11 +45,25 @@ describe('GetAuthToken handler', () => {
     ctxt.queryParams.mockReturnValueOnce({ code: 'asd' });
     await handler(ctxt as unknown as HttpContext);
 
+    expect(jwt.sign).toHaveBeenCalledWith(
+      {
+        username: 'octocat',
+        homepage: 'https://github.com/octocat',
+        avatarUrl: 'https://static.github.com/octocat',
+        githubToken: 'gho_189asdjhADAs8',
+      },
+      expect.any(String),
+      { noTimestamp: true },
+    );
     expect(ctxt.status).toHaveBeenCalledWith(200);
     expect(ctxt.cookie).toHaveBeenNthCalledWith(
       2,
       'token',
-      { githubToken: 'gho_189asdjhADAs8', signedToken: 'signedToken' },
+      {
+        githubToken: 'gho_189asdjhADAs8',
+        signedToken: 'signedToken',
+        exp: expect.any(Number),
+      },
       { sameSite: 'none', secure: true, httpOnly: true },
     );
   });

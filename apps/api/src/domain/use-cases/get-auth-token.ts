@@ -34,7 +34,6 @@ export const getAuthTokenUseCase = async (
 
   const payload = {
     ...personalInfo,
-    exp: Math.floor(Date.now() / 1000) + 60 * 60,
   };
 
   const signedToken = await jwt.sign({ ...payload, githubToken }, jwtSecret, {
@@ -43,6 +42,7 @@ export const getAuthTokenUseCase = async (
   const signature = {
     githubToken,
     signedToken,
+    exp: Math.floor(Date.now() / 1000) + 60 * 60,
   };
 
   return { payload, signature };

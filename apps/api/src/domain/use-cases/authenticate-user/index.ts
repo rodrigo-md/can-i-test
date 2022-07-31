@@ -12,12 +12,12 @@ export interface AuthCookie {
   username: string;
   homepage: string;
   avatarUrl: string;
-  exp: number;
 }
 
 export interface TokenCookie {
   githubToken: string;
   signedToken: string;
+  exp: number;
 }
 
 export interface AuthConfig {
@@ -31,11 +31,11 @@ export const authenticateUserUseCase = async (
   token: TokenCookie,
   config: AuthConfig,
 ) => {
-  const { githubToken, signedToken } = token;
+  const { githubToken, signedToken, exp } = token;
   const payload = { ...auth, githubToken };
 
   if (
-    auth.exp <=
+    exp <=
     Math.floor(Date.now() / 1000) + config.aproximateJwtExpirationInSeconds
   ) {
     throw new JwtTokenExpired();

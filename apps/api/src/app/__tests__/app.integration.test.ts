@@ -50,14 +50,22 @@ describe('Express app', () => {
       const auth = {
         username: 'octocat',
         homepage: 'https://github.com/octocat',
-        avatarUrl: 'httops://avatars.githubusercontent.com/21839',
-        exp: Math.floor(Date.now() / 1000) + 60 * 60, // not expired token
+        avatarUrl: 'https://avatars.githubusercontent.com/21839',
       };
-      const githubToken = 'gho_igvihnofir2389SDFJLK89sd89f';
+
+      const githubToken = 'gho_as89129ed8a9sd';
       const payload = { ...auth, githubToken };
 
-      const jwtAsync = promisify<typeof payload, string, string>(jwt.sign);
-      const signedToken = await jwtAsync(payload, JWT_TESTING_SECRET);
+      // Enforce a different JWT signature using  a differente JWT secret
+      const jwtAsync = promisify<
+        typeof payload,
+      string,
+      { noTimestamp: boolean },
+      string
+      >(jwt.sign);
+      const signedToken = await jwtAsync(payload, JWT_TESTING_SECRET, {
+        noTimestamp: true,
+      });
 
       const authCookie = createFakeAuthCookie(auth);
       const tokenCookie = createFakeTokenCookie({ githubToken, signedToken });
@@ -73,17 +81,28 @@ describe('Express app', () => {
       const auth = {
         username: 'octocat',
         homepage: 'https://github.com/octocat',
-        avatarUrl: 'httops://avatars.githubusercontent.com/21839',
-        exp: Math.floor(Date.now() / 1000) - dayInSeconds, // expired 1 day ago
+        avatarUrl: 'https://avatars.githubusercontent.com/21839',
       };
+
       const githubToken = 'gho_igvihnofir2389SDFJLK89sd89f';
       const payload = { ...auth, githubToken };
 
-      const jwtAsync = promisify<typeof payload, string, string>(jwt.sign);
-      const signedToken = await jwtAsync(payload, JWT_SECRET);
+      const jwtAsync = promisify<
+        typeof payload,
+      string,
+      { noTimestamp: boolean },
+      string
+      >(jwt.sign);
+      const signedToken = await jwtAsync(payload, JWT_SECRET, {
+        noTimestamp: true,
+      });
 
       const authCookie = createFakeAuthCookie(auth);
-      const tokenCookie = createFakeTokenCookie({ githubToken, signedToken });
+      const tokenCookie = createFakeTokenCookie({
+        githubToken,
+        signedToken,
+        exp: Math.floor(Date.now() / 1000) - dayInSeconds, // Expired 1 day ago
+      });
 
       return httpAgent
         .get('/test-auth')
@@ -95,14 +114,20 @@ describe('Express app', () => {
       const auth = {
         username: 'octocat',
         homepage: 'https://github.com/octocat',
-        avatarUrl: 'httops://avatars.githubusercontent.com/21839',
-        exp: Math.floor(Date.now() / 1000) + 60 * 60, // expired in one more hour
+        avatarUrl: 'https://avatars.githubusercontent.com/21839',
       };
       const githubToken = 'gho_igvihnofir2389SDFJLK89sd89f';
       const payload = { ...auth, githubToken };
 
-      const jwtAsync = promisify<typeof payload, string, string>(jwt.sign);
-      const signedToken = await jwtAsync(payload, JWT_SECRET);
+      const jwtAsync = promisify<
+        typeof payload,
+      string,
+      { noTimestamp: boolean },
+      string
+      >(jwt.sign);
+      const signedToken = await jwtAsync(payload, JWT_SECRET, {
+        noTimestamp: true,
+      });
 
       const authCookie = createFakeAuthCookie(auth);
       const tokenCookie = createFakeTokenCookie({ githubToken, signedToken });
@@ -119,13 +144,11 @@ function createFakeAuthCookie(auth?: {
   username: string;
   homepage: string;
   avatarUrl: string;
-  exp: number;
 }) {
   const defaultAuth = {
     username: 'octocat',
     homepage: 'https://github.com/octocat',
     avatarUrl: 'httops://avatars.githubusercontent.com/21839',
-    exp: Math.floor(Date.now() / 1000) + 60 * 60,
   };
 
   return `auth=${encodeURIComponent(
@@ -136,10 +159,16 @@ function createFakeAuthCookie(auth?: {
 function createFakeTokenCookie({
   githubToken,
   signedToken,
-}: { githubToken?: string; signedToken?: string } = {}) {
+  exp,
+}: { githubToken?: string; signedToken?: string; exp?: number } = {}) {
   const github = githubToken ?? 'gho_as89129ed8a9sd';
   const signed = signedToken ?? '123qwda.123q23asd.123q23';
-  const tokenCookie = { githubToken: github, signedToken: signed };
+  const expiration = exp ?? Math.floor(Date.now() / 1000) + 3600;
+  const tokenCookie = {
+    githubToken: github,
+    signedToken: signed,
+    exp: expiration,
+  };
 
   return `token=${encodeURIComponent(
     `j:${JSON.stringify(tokenCookie)}`,

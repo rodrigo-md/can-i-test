@@ -25,11 +25,8 @@ const authCookieSchema = {
     avatarUrl: {
       type: 'string',
     },
-    exp: {
-      type: 'integer',
-    },
   },
-  required: ['username', 'homepage', 'avatarUrl', 'exp'],
+  required: ['username', 'homepage', 'avatarUrl'],
   additionalProperties: false,
 };
 
@@ -42,8 +39,11 @@ const tokenCookieSchema = {
     signedToken: {
       type: 'string',
     },
+    exp: {
+      type: 'integer',
+    },
   },
-  required: ['githubToken', 'signedToken'],
+  required: ['githubToken', 'signedToken', 'exp'],
   additionalProperties: false,
 };
 
