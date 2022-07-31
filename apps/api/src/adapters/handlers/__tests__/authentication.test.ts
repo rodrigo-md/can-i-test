@@ -107,6 +107,46 @@ describe('Authentication middleware', () => {
     }
   });
 
+  test('throw an Http Forbidden error when jwt is expired', async () => {
+    const authCookie = createFakeAuthCookie();
+    // Enforce jwt expiration one hour ago
+    const tokenCookie = createFakeTokenCookie({
+      exp: Math.floor(Date.now() / 1000) - 3600,
+    });
+
+    const validatePublicCookie = jest
+      .fn()
+      .mockReturnValue({ valid: authCookie, errors: null });
+    const validatePrivateCookie = jest
+      .fn()
+      .mockReturnValue({ valid: tokenCookie, errors: null });
+    const validationFactory = jest
+      .fn()
+      .mockReturnValueOnce(validatePublicCookie)
+      .mockReturnValueOnce(validatePrivateCookie);
+
+    const jwt = {
+      sign: jest.fn().mockResolvedValue(tokenCookie.signedToken),
+    };
+    const handler = createAuthenticationHandler(
+      validationFactory,
+      jwt as unknown as JWT,
+      authConfig,
+    );
+    const ctxt = {
+      cookies: jest
+        .fn()
+        .mockReturnValue({ auth: authCookie, token: tokenCookie }),
+    };
+
+    try {
+      await handler(ctxt as unknown as HttpContext);
+      expect.hasAssertions();
+    } catch (e) {
+      expect(e).toBeInstanceOf(httpErrors.Forbidden);
+    }
+  });
+
   test('ends successfully when the signature calculated and the provided are the same', async () => {
     const authCookie = createFakeAuthCookie();
     const tokenCookie = createFakeTokenCookie();
@@ -153,13 +193,13 @@ function createFakeAuthCookie() {
     username: 'octocat',
     homepage: 'https://github.com/octocat',
     avatarUrl: 'https://avatar.github.com/octocat',
-    exp: Math.floor(Date.now() / 1000) + 60 * 60,
   };
 }
 
-function createFakeTokenCookie() {
+function createFakeTokenCookie({ exp }: { exp?: number } = {}) {
   return {
     githubToken: 'gho_9120as98d192eqdfhf129w8edasdh',
     signedToken: '21e8q9w8e12ea.1238127r83as8das.129387129e7',
+    exp: exp ?? Math.floor(Date.now() / 1000) + 60 * 60,
   };
 }
