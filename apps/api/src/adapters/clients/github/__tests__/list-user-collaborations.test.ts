@@ -1,21 +1,21 @@
 import { describe, test } from '@jest/globals';
-import { createListUserRepositories } from '../list-user-repositories';
+import { createListUserCollaborations } from '../list-user-collaborations';
 import githubErrors from '../errors';
 import type { HttpClient } from '../interfaces/dependencies';
 
-describe('listUserRepositories method', () => {
-  test('request public repositories on which the user is owner or collaborator', async () => {
+describe('listUserCollaborations method', () => {
+  test('request public repositories on which the user a collaborator', async () => {
     const githubToken = 'gho_asd098sdgv981239eas89d';
     const expectedQueryParams =
-      'visibility=public&affiliation=owner,collaborator&per_page=50';
+      'visibility=public&affiliation=collaborator&per_page=50';
     const httpClient = {
       get: jest.fn().mockResolvedValue({ status: 200, data: [] }),
     };
-    const listUserRepositories = createListUserRepositories(
+    const listUserCollaborations = createListUserCollaborations(
       httpClient as unknown as HttpClient,
     );
 
-    await listUserRepositories(githubToken);
+    await listUserCollaborations(githubToken);
 
     expect(httpClient.get).toHaveBeenCalledWith(
       expect.stringContaining('https://api.github.com/user/repos'),
@@ -33,7 +33,7 @@ describe('listUserRepositories method', () => {
     });
   });
 
-  test('returns only the repositories names', async () => {
+  test('returns a list of repositories', async () => {
     const githubToken = 'gho_asd098sdgv981239eas89d';
     const response = {
       status: 200,
@@ -45,6 +45,8 @@ describe('listUserRepositories method', () => {
           html_url: 'https://github.com/octocat/hello-world',
           url: 'https://api.github.com/repos/octocat/hello-world',
           owner: { id: 123, login: 'octocat' },
+          private: false,
+          fork: false,
         },
         {
           id: 739,
@@ -53,21 +55,33 @@ describe('listUserRepositories method', () => {
           html_url: 'https://github.com/rodrigo-md/can-i-help',
           url: 'https://api.github.com/repos/rodrigo-md/can-i-help',
           owner: { id: 123, login: 'rodrigo-md' },
+          private: true,
+          fork: false,
         },
       ],
     };
     const httpClient = {
       get: jest.fn().mockResolvedValue(response),
     };
-    const listUserRepositories = createListUserRepositories(
+    const listUserCollaborations = createListUserCollaborations(
       httpClient as unknown as HttpClient,
     );
 
-    const result = await listUserRepositories(githubToken);
+    const result = await listUserCollaborations(githubToken);
 
     expect(result).toHaveLength(2);
-    expect(result[0]).toEqual({ name: 'hello-world' });
-    expect(result[1]).toEqual({ name: 'can-i-help' });
+    expect(result[0]).toEqual({
+      name: 'hello-world',
+      owner: 'octocat',
+      isPublic: true,
+      isFork: false,
+    });
+    expect(result[1]).toEqual({
+      name: 'can-i-help',
+      owner: 'rodrigo-md',
+      isPublic: false,
+      isFork: false,
+    });
   });
 
   test('throw RequiresAuthentication error when receives a 401 response', async () => {
@@ -76,11 +90,11 @@ describe('listUserRepositories method', () => {
     const httpClient = {
       get: jest.fn().mockRejectedValue({ response }),
     };
-    const listUserRepositories = createListUserRepositories(
+    const listUserCollaborations = createListUserCollaborations(
       httpClient as unknown as HttpClient,
     );
 
-    await expect(() => listUserRepositories(githubToken)).rejects.toThrow(
+    await expect(() => listUserCollaborations(githubToken)).rejects.toThrow(
       githubErrors.RequiresAuthentication,
     );
   });
@@ -91,11 +105,11 @@ describe('listUserRepositories method', () => {
     const httpClient = {
       get: jest.fn().mockRejectedValue({ response }),
     };
-    const listUserRepositories = createListUserRepositories(
+    const listUserCollaborations = createListUserCollaborations(
       httpClient as unknown as HttpClient,
     );
 
-    await expect(() => listUserRepositories(githubToken)).rejects.toThrow(
+    await expect(() => listUserCollaborations(githubToken)).rejects.toThrow(
       githubErrors.Forbidden,
     );
   });
@@ -106,11 +120,11 @@ describe('listUserRepositories method', () => {
     const httpClient = {
       get: jest.fn().mockRejectedValue({ response }),
     };
-    const listUserRepositories = createListUserRepositories(
+    const listUserCollaborations = createListUserCollaborations(
       httpClient as unknown as HttpClient,
     );
 
-    await expect(() => listUserRepositories(githubToken)).rejects.toThrow(
+    await expect(() => listUserCollaborations(githubToken)).rejects.toThrow(
       githubErrors.ValidationFailed,
     );
   });
@@ -121,12 +135,27 @@ describe('listUserRepositories method', () => {
     const httpClient = {
       get: jest.fn().mockRejectedValue(error),
     };
-    const listUserRepositories = createListUserRepositories(
+    const listUserCollaborations = createListUserCollaborations(
       httpClient as unknown as HttpClient,
     );
 
-    await expect(() => listUserRepositories(githubToken)).rejects.toThrow(
-      error,
+    await expect(() => listUserCollaborations(githubToken)).rejects.toThrow(
+      TypeError,
+    );
+  });
+
+  test('throw any other http error as Unknown', async () => {
+    const githubToken = 'gho_asd098sdgv981239eas89d';
+    const response = { status: 500, data: 'Internal Server Error' };
+    const httpClient = {
+      get: jest.fn().mockRejectedValue({ response }),
+    };
+    const listUserCollaborations = createListUserCollaborations(
+      httpClient as unknown as HttpClient,
+    );
+
+    await expect(() => listUserCollaborations(githubToken)).rejects.toThrow(
+      githubErrors.Unknown,
     );
   });
 });

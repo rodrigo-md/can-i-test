@@ -20,4 +20,11 @@ export interface GithubRepository {
 
   // https://api.github.com/repos/<owner>/<repository name>
   url: string;
+
+  // Repository visibility
+  private: boolean;
+
+  fork: boolean;
+
+  parent?: GithubRepository;
 }

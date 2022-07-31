@@ -31,6 +31,7 @@ export function createGetUser(httpClient: HttpClient) {
           }
         }
       }
+      // TODO: throw new Unknown(e.message);
       throw e;
     }
   };
