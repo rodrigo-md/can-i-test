@@ -4,7 +4,7 @@ import type { SignOptions } from 'jsonwebtoken';
 export const sign = async (
   value: object,
   secret: string,
-  options?: { algorithm: string },
+  options?: { noTimestamp: boolean },
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
     jwt.sign(

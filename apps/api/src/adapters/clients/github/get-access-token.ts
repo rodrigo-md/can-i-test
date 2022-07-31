@@ -5,7 +5,7 @@ import {
 } from './errors';
 import type { GithubToken } from './interfaces/access-token';
 import type { GithubConfig, HttpClient } from './interfaces/dependencies';
-
+// TODO: Handle when response is 200 but token empty: TokenAlreadyIssued
 export function createGetAccessToken(
   httpClient: HttpClient,
   config: GithubConfig,

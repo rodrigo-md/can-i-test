@@ -101,6 +101,7 @@ describe('Authentication middleware', () => {
           githubToken: tokenCookie.githubToken,
         },
         expect.any(String),
+        { noTimestamp: true },
       );
       expect(e).toBeInstanceOf(httpErrors.Forbidden);
     }

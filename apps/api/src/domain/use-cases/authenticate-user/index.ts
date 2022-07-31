@@ -4,7 +4,7 @@ export interface JWT {
   sign(
     data: object,
     key: string,
-    options?: { algorithm: string }
+    options?: { noTimestamp: boolean }
   ): Promise<string>;
 }
 
@@ -41,7 +41,9 @@ export const authenticateUserUseCase = async (
     throw new JwtTokenExpired();
   }
 
-  const calculatedJwt = await jwt.sign(payload, config.jwtSecret);
+  const calculatedJwt = await jwt.sign(payload, config.jwtSecret, {
+    noTimestamp: true,
+  });
 
   if (signedToken !== calculatedJwt) {
     throw new CorruptedCookies();
