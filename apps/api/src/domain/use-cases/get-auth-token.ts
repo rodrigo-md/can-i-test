@@ -5,12 +5,13 @@ export interface GithubClient {
   ): Promise<{ username: string; avatarUrl: string; homepage: string }>;
 }
 
+interface JWTOptions {
+  // Exclude timestamp claims like exp or iat
+  noTimestamp: boolean;
+}
+
 export interface JWT {
-  sign(
-    data: object,
-    key: string,
-    options?: { algorithm: string }
-  ): Promise<string>;
+  sign(data: object, key: string, options?: JWTOptions): Promise<string>;
 }
 
 export interface AuthTokenDTO {
@@ -28,6 +29,7 @@ export const getAuthTokenUseCase = async (
   const { accessToken: githubToken } = await githubClient.getAccessToken(
     authorizationCode,
   );
+
   const personalInfo = await githubClient.getUser(githubToken);
 
   const payload = {
@@ -35,7 +37,9 @@ export const getAuthTokenUseCase = async (
     exp: Math.floor(Date.now() / 1000) + 60 * 60,
   };
 
-  const signedToken = await jwt.sign({ ...payload, githubToken }, jwtSecret);
+  const signedToken = await jwt.sign({ ...payload, githubToken }, jwtSecret, {
+    noTimestamp: true,
+  });
   const signature = {
     githubToken,
     signedToken,
