@@ -12,7 +12,6 @@ export const createValidateRepositoryAffiliationHandler = (
     try {
       const { repositoryName } = ctxt.pathParams<{ repositoryName: string }>();
       const githubToken = ctxt.retrieveFromStore<string>('githubToken');
-      // TODO: store username in the authentication handler
       const username = ctxt.retrieveFromStore<string>('username');
 
       const repository = await validateRepositoryAffiliationUseCase(

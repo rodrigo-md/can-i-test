@@ -184,6 +184,7 @@ describe('Authentication middleware', () => {
       'githubToken',
       tokenCookie.githubToken,
     );
+    expect(ctxt.store).toHaveBeenCalledWith('username', authCookie.username);
     expect(ctxt.next).toHaveBeenCalled();
   });
 });
