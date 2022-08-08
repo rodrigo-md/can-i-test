@@ -70,6 +70,7 @@ export const createAuthenticationHandler = (
       await authenticateUserUseCase(jwt, publicCookie, privateCookie, config);
 
       ctxt.store('githubToken', privateCookie.githubToken);
+      ctxt.store('username', publicCookie.username);
       ctxt.next();
     } catch (e) {
       switch (true) {
